@@ -1,0 +1,9 @@
+**/.git
+**/.gitignore
+**/README.md
+**/.env
+**/.air.toml
+**/tmp
+**/*.log
+**/vendor
+**/.DS_Store

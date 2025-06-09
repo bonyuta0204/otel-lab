@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "github.com/bonyuta0204/otel-lab/proto/userpb";
+
+import "google/protobuf/timestamp.proto";
+
+service UserService {
+    rpc GetUser(GetUserRequest) returns (User);
+    rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+    rpc CreateUser(CreateUserRequest) returns (User);
+    rpc GetUsersByIds(GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
+}
+
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message GetUserRequest {
+    string id = 1;
+}
+
+message ListUsersRequest {
+    int32 page_size = 1;
+    int32 page_number = 2;
+}
+
+message ListUsersResponse {
+    repeated User users = 1;
+    int32 total_count = 2;
+}
+
+message CreateUserRequest {
+    string name = 1;
+    string email = 2;
+}
+
+message GetUsersByIdsRequest {
+    repeated string ids = 1;
+}
+
+message GetUsersByIdsResponse {
+    repeated User users = 1;
+}
