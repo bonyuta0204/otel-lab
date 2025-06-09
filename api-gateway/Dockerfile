@@ -1,21 +1,21 @@
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine
 
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
 
 # Install air for hot reload
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 
-FROM golang:1.21-alpine
+# Copy go.mod and go.sum from project root
+COPY go.mod go.sum ./
 
-WORKDIR /app
+# Download dependencies
+RUN go mod download
 
-# Install air
-RUN go install github.com/cosmtrek/air@latest
-
-# Copy source code
+# Copy the entire project (since we need proto files)
 COPY . .
+
+# Set working directory to api-gateway
+WORKDIR /app/api-gateway
 
 EXPOSE 8080
 

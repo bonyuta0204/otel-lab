@@ -46,8 +46,8 @@ services:
       - task-service
       - user-service
     volumes:
-      - ./api-gateway:/app
-    command: air -c .air.toml
+      - ./api-gateway:/app/api-gateway
+    command: go run .
 
   # Task Service
   task-service:
@@ -71,8 +71,8 @@ services:
       jaeger:
         condition: service_started
     volumes:
-      - ./task-service:/app
-    command: air -c .air.toml
+      - ./task-service:/app/task-service
+    command: go run .
 
   # User Service
   user-service:
@@ -87,8 +87,8 @@ services:
     depends_on:
       - jaeger
     volumes:
-      - ./user-service:/app
-    command: air -c .air.toml
+      - ./user-service:/app/user-service
+    command: go run .
 
 volumes:
   postgres_data:
