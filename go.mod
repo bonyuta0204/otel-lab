@@ -5,6 +5,7 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
+	github.com/XSAM/otelsql v0.39.0
 	github.com/gorilla/mux v1.8.1
 	github.com/lib/pq v1.10.9
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.61.0
