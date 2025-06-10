@@ -6,7 +6,7 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
@@ -17,7 +17,7 @@ import (
 func InitTracer(ctx context.Context) (*tracesdk.TracerProvider, error) {
 	jaegerEndpoint := os.Getenv("JAEGER_ENDPOINT")
 	if jaegerEndpoint == "" {
-		jaegerEndpoint = "http://localhost:14268/api/traces"
+		jaegerEndpoint = "http://localhost:4318/v1/traces"
 	}
 
 	serviceName := os.Getenv("SERVICE_NAME")
@@ -26,7 +26,7 @@ func InitTracer(ctx context.Context) (*tracesdk.TracerProvider, error) {
 	}
 
 	// Create Jaeger exporter
-	exporter, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(jaegerEndpoint)))
+	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(jaegerEndpoint))
 	if err != nil {
 		return nil, err
 	}

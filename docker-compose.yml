@@ -37,7 +37,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - JAEGER_ENDPOINT=http://jaeger:4318/v1/traces
       - TASK_SERVICE_ADDR=task-service:8081
       - USER_SERVICE_ADDR=user-service:8082
       - SERVICE_NAME=api-gateway
@@ -57,7 +57,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - JAEGER_ENDPOINT=http://jaeger:4318/v1/traces
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=otellab
@@ -82,7 +82,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - JAEGER_ENDPOINT=http://jaeger:4318/v1/traces
       - SERVICE_NAME=user-service
     depends_on:
       - jaeger
