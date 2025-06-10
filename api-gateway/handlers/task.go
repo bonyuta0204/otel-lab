@@ -15,6 +15,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type TaskHandler struct {
@@ -31,6 +32,7 @@ func NewTaskHandler() (*TaskHandler, error) {
 	conn, err := grpc.NewClient(
 		taskServiceAddr,
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		return nil, err
