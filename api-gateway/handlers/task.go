@@ -8,14 +8,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/mux"
-	taskpb "github.com/bonyuta0204/otel-lab/proto/taskpb"
 	"github.com/bonyuta0204/otel-lab/api-gateway/tracing"
+	taskpb "github.com/bonyuta0204/otel-lab/proto/taskpb"
+	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type TaskHandler struct {
@@ -29,11 +28,9 @@ func NewTaskHandler() (*TaskHandler, error) {
 		taskServiceAddr = "localhost:8081"
 	}
 
-	conn, err := grpc.Dial(
+	conn, err := grpc.NewClient(
 		taskServiceAddr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
-		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	if err != nil {
 		return nil, err
@@ -258,8 +255,8 @@ func (h *TaskHandler) GetTaskTrace(w http.ResponseWriter, r *http.Request) {
 	// This would typically query Jaeger API for traces related to this task
 	// For now, we'll return a placeholder response
 	response := map[string]interface{}{
-		"task_id": taskID,
-		"message": "Trace lookup not yet implemented",
+		"task_id":    taskID,
+		"message":    "Trace lookup not yet implemented",
 		"jaeger_url": "http://localhost:16686/search?service=task-service&tags={\"task.id\":\"" + taskID + "\"}",
 	}
 

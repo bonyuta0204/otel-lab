@@ -8,14 +8,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/mux"
-	userpb "github.com/bonyuta0204/otel-lab/proto/userpb"
 	"github.com/bonyuta0204/otel-lab/api-gateway/tracing"
+	userpb "github.com/bonyuta0204/otel-lab/proto/userpb"
+	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type UserHandler struct {
@@ -29,12 +28,11 @@ func NewUserHandler() (*UserHandler, error) {
 		userServiceAddr = "localhost:8082"
 	}
 
-	conn, err := grpc.Dial(
+	conn, err := grpc.NewClient(
 		userServiceAddr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
-		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
+
 	if err != nil {
 		return nil, err
 	}

@@ -48,10 +48,7 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer(
-		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
-		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
-	)
+	s := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 
 	userpb.RegisterUserServiceServer(s, userServer)
 

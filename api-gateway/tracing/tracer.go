@@ -7,13 +7,14 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 )
 
-func InitTracer(ctx context.Context) (*sdktrace.TracerProvider, error) {
+func InitTracer(ctx context.Context) (*tracesdk.TracerProvider, error) {
 	jaegerEndpoint := os.Getenv("JAEGER_ENDPOINT")
 	if jaegerEndpoint == "" {
 		jaegerEndpoint = "http://localhost:14268/api/traces"
@@ -45,14 +46,20 @@ func InitTracer(ctx context.Context) (*sdktrace.TracerProvider, error) {
 	}
 
 	// Create tracer provider
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(exporter),
-		sdktrace.WithResource(res),
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	tp := tracesdk.NewTracerProvider(
+		tracesdk.WithBatcher(exporter),
+		tracesdk.WithResource(res),
+		tracesdk.WithSampler(tracesdk.AlwaysSample()),
 	)
 
 	// Set global tracer provider
 	otel.SetTracerProvider(tp)
+
+	// Set global propagator to tracecontext (W3C Trace Context)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	))
 
 	return tp, nil
 }
